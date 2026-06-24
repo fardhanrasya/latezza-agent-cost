@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Latezza WhatsApp AI Agent Cost Calculator</title>
+  <!-- Google Fonts Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    /* CSS Custom Properties for Theme */
+    :root {
+      --background-gradient: linear-gradient(135deg, #090d16 0%, #111827 100%);
+      --card-bg: rgba(17, 24, 39, 0.7);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --card-hover-border: rgba(255, 255, 255, 0.16);
+      
+      --color-primary: #06b6d4; /* Neon Cyan */
+      --color-primary-rgb: 6, 182, 212;
+      --color-accent: #8b5cf6; /* Purple */
+      --color-accent-rgb: 139, 92, 246;
+      --color-success: #10b981; /* Emerald */
+      --color-warning: #f59e0b; /* Amber */
+      
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --text-dark: #6b7280;
+      
+      --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Reset & Base Styles */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--background-gradient);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.5;
+      overflow-x: hidden;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem;
+      width: 100%;
+      flex-grow: 1;
+    }
+
+    /* Header styling */
+    header {
+      text-align: center;
+      margin-bottom: 3rem;
+      animation: fadeInDown 0.8s ease;
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      margin-bottom: 0.75rem;
+      background: linear-gradient(to right, #ffffff, #9ca3af, var(--color-primary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    header p {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      max-width: 600px;
+      margin: 0 auto;
+      font-weight: 300;
+    }
+
+    /* Preset Buttons Container */
+    .presets-container {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+      animation: fadeIn 1s ease;
+    }
+
+    .preset-btn {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--card-border);
+      color: var(--text-main);
+      padding: 0.75rem 1.5rem;
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+      backdrop-filter: blur(10px);
+    }
+
+    .preset-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: var(--color-primary);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(6, 182, 212, 0.15);
+    }
+
+    .preset-btn.active {
+      background: rgba(6, 182, 212, 0.15);
+      border-color: var(--color-primary);
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(6, 182, 212, 0.25);
+    }
+
+    /* Layout Grid */
+    .calculator-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    @media (max-width: 968px) {
+      .calculator-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Cards Styling */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 2rem;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      transition: var(--transition-smooth);
+    }
+
+    .card:hover {
+      border-color: var(--card-hover-border);
+    }
+
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding-bottom: 0.75rem;
+    }
+
+    .card-title span.badge {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    .badge-cyan {
+      background: rgba(6, 182, 212, 0.1);
+      color: var(--color-primary);
+      border: 1px solid rgba(6, 182, 212, 0.2);
+    }
+
+    .badge-purple {
+      background: rgba(139, 92, 246, 0.1);
+      color: var(--color-accent);
+      border: 1px solid rgba(139, 92, 246, 0.2);
+    }
+
+    .badge-success {
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--color-success);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+
+    /* Inputs & Form Groups */
+    .form-group {
+      margin-bottom: 1.75rem;
+    }
+
+    .form-label-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .form-label {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text-main);
+    }
+
+    .form-value {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      background: rgba(6, 182, 212, 0.08);
+      padding: 0.15rem 0.5rem;
+      border-radius: 6px;
+      border: 1px solid rgba(6, 182, 212, 0.15);
+    }
+
+    .form-value.purple {
+      color: var(--color-accent);
+      background: rgba(139, 92, 246, 0.08);
+      border-color: rgba(139, 92, 246, 0.15);
+    }
+
+    /* Sliders */
+    .slider {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.1);
+      outline: none;
+      transition: var(--transition-smooth);
+    }
+
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
+      transition: var(--transition-smooth);
+    }
+
+    .slider::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      box-shadow: 0 0 15px rgba(6, 182, 212, 0.8);
+    }
+
+    .slider.slider-purple::-webkit-slider-thumb {
+      background: var(--color-accent);
+      box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+    }
+
+    .slider.slider-purple::-webkit-slider-thumb:hover {
+      box-shadow: 0 0 15px rgba(139, 92, 246, 0.8);
+    }
+
+    /* Number inputs */
+    .input-number {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 0.6rem 0.9rem;
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.9rem;
+      outline: none;
+      transition: var(--transition-smooth);
+    }
+
+    .input-number:focus {
+      border-color: var(--color-primary);
+      background: rgba(255, 255, 255, 0.05);
+      box-shadow: 0 0 10px rgba(6, 182, 212, 0.15);
+    }
+
+    .sub-info {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.35rem;
+      display: block;
+    }
+
+    /* Accordion / Collapsible Settings Section */
+    .advanced-toggle {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-family: inherit;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      margin-top: 1rem;
+      transition: var(--transition-smooth);
+      margin-bottom: 0.5rem;
+    }
+
+    .advanced-toggle:hover {
+      color: var(--color-primary);
+    }
+
+    .advanced-settings {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease-out;
+      border-top: 1px dashed rgba(255, 255, 255, 0.05);
+      padding-top: 0;
+    }
+
+    .advanced-settings.show {
+      max-height: 600px;
+      padding-top: 1.25rem;
+      overflow-y: auto;
+    }
+
+    /* Results Card styling */
+    .results-card {
+      background: linear-gradient(135deg, rgba(17, 24, 39, 0.85) 0%, rgba(20, 15, 35, 0.85) 100%);
+      border: 1px solid rgba(139, 92, 246, 0.15);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), 0 0 40px rgba(139, 92, 246, 0.05);
+      position: sticky;
+      top: 2rem;
+    }
+
+    .main-metric {
+      text-align: center;
+      margin-bottom: 2rem;
+      padding: 1.5rem;
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .main-metric-label {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+
+    .main-metric-value {
+      font-size: 2.75rem;
+      font-weight: 800;
+      color: #fff;
+      text-shadow: 0 0 20px rgba(6, 182, 212, 0.3);
+      line-height: 1.1;
+    }
+
+    .main-metric-sub {
+      font-size: 0.9rem;
+      color: var(--color-primary);
+      margin-top: 0.5rem;
+      font-weight: 600;
+    }
+
+    /* Metric grid */
+    .metric-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .metric-item {
+      background: rgba(255, 255, 255, 0.015);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      padding: 1rem;
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .metric-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 0.35rem;
+      font-weight: 500;
+    }
+
+    .metric-value {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    /* Cost Share Breakdown */
+    .breakdown-section {
+      margin-top: 2rem;
+    }
+
+    .breakdown-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .progress-stacked {
+      height: 16px;
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      background: rgba(255, 255, 255, 0.05);
+      margin-bottom: 1.5rem;
+    }
+
+    .progress-part {
+      height: 100%;
+      transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .progress-part-chat {
+      background: var(--color-primary);
+      box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .progress-part-followup {
+      background: var(--color-accent);
+    }
+
+    .progress-part-cron {
+      background: var(--color-warning);
+    }
+
+    .progress-part-elec {
+      background: var(--color-success);
+    }
+
+    .legend-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem 1.5rem;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .legend-dot-chat { background: var(--color-primary); }
+    .legend-dot-followup { background: var(--color-accent); }
+    .legend-dot-cron { background: var(--color-warning); }
+    .legend-dot-elec { background: var(--color-success); }
+
+    .legend-text {
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .legend-val {
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    /* Footer styling */
+    footer {
+      text-align: center;
+      margin-top: 4rem;
+      padding: 1.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      color: var(--text-dark);
+      font-size: 0.8rem;
+    }
+
+    /* Animations */
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* Custom scrollbar for advanced settings */
+    .advanced-settings::-webkit-scrollbar {
+      width: 6px;
+    }
+    .advanced-settings::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .advanced-settings::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+    }
+    .advanced-settings::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>Latezza Cost Calculator</h1>
+      <p>Estimasi Biaya Operasional Riil untuk Deploy WhatsApp AI Agent & Ads Report Automation secara On-Premise dengan Gemini 3.1 Flash-Lite</p>
+    </header>
+
+    <!-- Preset Selection buttons -->
+    <div class="presets-container">
+      <button class="preset-btn active" id="btn-tier1" onclick="applyPreset('tier1')">Small Business (100 Chat/Hari)</button>
+      <button class="preset-btn" id="btn-tier2" onclick="applyPreset('tier2')">Medium Business (1.000 Chat/Hari)</button>
+      <button class="preset-btn" id="btn-tier3" onclick="applyPreset('tier3')">Enterprise (5.000 Chat/Hari)</button>
+    </div>
+
+    <div class="calculator-grid">
+      <!-- Left Column: Inputs -->
+      <div class="card">
+        <h2 class="card-title">
+          <span>Konfigurasi Parameter</span>
+          <span class="badge badge-cyan">Input</span>
+        </h2>
+
+        <!-- Form: Chats per Day -->
+        <div class="form-group">
+          <div class="form-label-container">
+            <span class="form-label">Volume Chat Pelanggan (Sesi) / Hari</span>
+            <span class="form-value" id="val-chats">100</span>
+          </div>
+          <input type="range" class="slider" id="chats" min="10" max="10000" step="10" value="100" oninput="updateCalculator()">
+          <span class="sub-info">Volume sesi percakapan kustomer baru/aktif per hari (30 hari sebulan).</span>
+        </div>
+
+        <!-- Form: Avg Messages per Session -->
+        <div class="form-group">
+          <div class="form-label-container">
+            <span class="form-label">Rata-rata Pesan per Sesi Chat</span>
+            <span class="form-value" id="val-messages-per-chat">12</span>
+          </div>
+          <input type="range" class="slider" id="messages-per-chat" min="1" max="50" step="1" value="12" oninput="updateCalculator()">
+          <span class="sub-info">Jumlah rata-rata pesan bolak-balik (kustomer + bot) dalam satu sesi obrolan.</span>
+        </div>
+
+        <!-- Form: Exchange Rate -->
+        <div class="form-group">
+          <div class="form-label-container">
+            <span class="form-label">Kurs Rupiah (IDR / USD)</span>
+            <span class="form-value" id="val-rate">Rp 17.500</span>
+          </div>
+          <input type="range" class="slider" id="rate" min="14000" max="20000" step="100" value="17500" oninput="updateCalculator()">
+          <span class="sub-info">Nilai tukar rupiah yang digunakan untuk konversi biaya penagihan Gemini API.</span>
+        </div>
+
+        <!-- Form: Server Power -->
+        <div class="form-group">
+          <div class="form-label-container">
+            <span class="form-label">Konsumsi Daya Server On-Premise (Watt)</span>
+            <span class="form-value purple" id="val-power">50 W</span>
+          </div>
+          <input type="range" class="slider slider-purple" id="power" min="5" max="250" step="5" value="50" oninput="updateCalculator()">
+          <span class="sub-info">Konsumsi listrik PC Server di rumah/kantor (TDP rata-rata i5 Gen 6 + idle GTX 1050 + Overhead).</span>
+        </div>
+
+        <!-- Form: Electricity Tariff -->
+        <div class="form-group">
+          <div class="form-label-container">
+            <span class="form-label">Tarif Listrik PLN (Rp / kWh)</span>
+            <span class="form-value purple" id="val-tariff">Rp 1.500</span>
+          </div>
+          <input type="range" class="slider slider-purple" id="tariff" min="1000" max="2500" step="50" value="1500" oninput="updateCalculator()">
+          <span class="sub-info">Tarif golongan listrik PLN Anda per kilo-watt hour (kWh).</span>
+        </div>
+
+        <!-- Form: Follow-up Rate -->
+        <div class="form-group">
+          <div class="form-label-container">
+            <span class="form-label">Tingkat Follow-up Otomatis (%)</span>
+            <span class="form-value" id="val-followup">5%</span>
+          </div>
+          <input type="range" class="slider" id="followup" min="1" max="30" step="1" value="5" oninput="updateCalculator()">
+          <span class="sub-info">Persentase dari daily active customer yang terhenti diskusinya lalu difollow-up oleh bot.</span>
+        </div>
+
+        <!-- Accordion for Advanced Parameters -->
+        <button class="advanced-toggle" onclick="toggleAdvancedSettings()">
+          <span id="adv-arrow">▼</span> Konfigurasi Token Size & Gemini Pricing (Advanced)
+        </button>
+
+        <div class="advanced-settings" id="advanced-box">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+              <span class="form-label">System Instructions (Tokens)</span>
+              <input type="number" class="input-number" id="t-sys" value="1200" oninput="updateCalculator()">
+            </div>
+            <div class="form-group">
+              <span class="form-label">Tool Declarations (Tokens)</span>
+              <input type="number" class="input-number" id="t-tools" value="300" oninput="updateCalculator()">
+            </div>
+          </div>
+          
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+              <span class="form-label">Avg History + Msg (Tokens)</span>
+              <input type="number" class="input-number" id="t-hist" value="370" oninput="updateCalculator()">
+            </div>
+            <div class="form-group">
+              <span class="form-label">Direct Reply Output (Tokens)</span>
+              <input type="number" class="input-number" id="t-out-direct" value="100" oninput="updateCalculator()">
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+              <span class="form-label">Tool Input Call (Tokens)</span>
+              <input type="number" class="input-number" id="t-in-tool" value="4010" oninput="updateCalculator()">
+            </div>
+            <div class="form-group">
+              <span class="form-label">Tool Output Response (Tokens)</span>
+              <input type="number" class="input-number" id="t-out-tool" value="180" oninput="updateCalculator()">
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+              <span class="form-label">Rasio Tool Execution (%)</span>
+              <input type="number" class="input-number" id="r-tool" value="30" min="0" max="100" oninput="updateCalculator()">
+            </div>
+            <div class="form-group">
+              <span class="form-label">Rasio Direct Reply (%)</span>
+              <input type="number" class="input-number" id="r-direct" value="70" min="0" max="100" oninput="updateCalculator()">
+            </div>
+          </div>
+
+          <div style="border-top: 1px dashed rgba(255,255,255,0.05); padding-top: 1rem; margin-top: 0.5rem;">
+            <p style="font-size: 0.8rem; font-weight: 600; margin-bottom: 0.5rem;">Gemini API Pricing / 1M Tokens (USD)</p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+              <div class="form-group">
+                <span class="form-label">Input Price Standard ($)</span>
+                <input type="number" class="input-number" id="p-in-std" value="0.25" step="0.01" oninput="updateCalculator()">
+              </div>
+              <div class="form-group">
+                <span class="form-label">Output Price Standard ($)</span>
+                <input type="number" class="input-number" id="p-out-std" value="1.50" step="0.1" oninput="updateCalculator()">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Results -->
+      <div class="card results-card">
+        <h2 class="card-title">
+          <span>Estimasi Biaya Bulanan</span>
+          <span class="badge badge-success">Output</span>
+        </h2>
+
+        <!-- Main Monthly Total -->
+        <div class="main-metric">
+          <div class="main-metric-label">TOTAL OPERASIONAL BULANAN</div>
+          <div class="main-metric-value" id="val-total-monthly">Rp 573.095</div>
+          <div class="main-metric-sub" id="val-total-monthly-usd">$32,75 / bulan</div>
+        </div>
+
+        <!-- Metric Grid Breakdown -->
+        <div class="metric-grid">
+          <div class="metric-item">
+            <span class="metric-label">Biaya Chat API</span>
+            <span class="metric-value" id="val-break-chat">Rp 516.128</span>
+          </div>
+          <div class="metric-item">
+            <span class="metric-label">Biaya Listrik Server</span>
+            <span class="metric-value" id="val-break-elec">Rp 54.000</span>
+          </div>
+          <div class="metric-item">
+            <span class="metric-label">Follow-up Reminder API</span>
+            <span class="metric-value" id="val-break-followup">Rp 762</span>
+          </div>
+          <div class="metric-item">
+            <span class="metric-label">Cron Report API</span>
+            <span class="metric-value" id="val-break-cron">Rp 2.205</span>
+          </div>
+        </div>
+
+        <!-- Extra details -->
+        <div style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.02); padding: 1rem; border-radius: 16px; font-size: 0.85rem; margin-bottom: 2rem;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 0.4rem;">
+            <span style="color: var(--text-muted);">Biaya Rata-rata per Chat:</span>
+            <span style="font-weight: 700; color: var(--color-primary);" id="val-avg-chat">Rp 14,34</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 0.4rem;">
+            <span style="color: var(--text-muted);">Total Sesi Chat per Bulan:</span>
+            <span style="font-weight: 600;" id="val-total-chats-month">3.000 sesi</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 0.4rem;">
+            <span style="color: var(--text-muted);">Total Pesan per Bulan:</span>
+            <span style="font-weight: 600;" id="val-total-messages-month">36.000 pesan</span>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: var(--text-muted);">Konsumsi Listrik Bulanan:</span>
+            <span style="font-weight: 600;" id="val-total-kwh">36 kWh</span>
+          </div>
+        </div>
+
+        <!-- Stacked Progress Cost share visual -->
+        <div class="breakdown-section">
+          <h3 class="breakdown-title">Distribusi Porsi Biaya</h3>
+          <div class="progress-stacked">
+            <div class="progress-part progress-part-chat" id="prog-chat" style="width: 80%"></div>
+            <div class="progress-part progress-part-followup" id="prog-followup" style="width: 5%"></div>
+            <div class="progress-part progress-part-cron" id="prog-cron" style="width: 5%"></div>
+            <div class="progress-part progress-part-elec" id="prog-elec" style="width: 10%"></div>
+          </div>
+
+          <!-- Legend Grid -->
+          <div class="legend-grid">
+            <div class="legend-item">
+              <span class="legend-dot legend-dot-chat"></span>
+              <div class="legend-text">
+                <span>Chat API</span>
+                <span class="legend-val" id="lbl-pct-chat">80%</span>
+              </div>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot legend-dot-elec"></span>
+              <div class="legend-text">
+                <span>Listrik Server</span>
+                <span class="legend-val" id="lbl-pct-elec">10%</span>
+              </div>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot legend-dot-followup"></span>
+              <div class="legend-text">
+                <span>Follow-up API</span>
+                <span class="legend-val" id="lbl-pct-followup">5%</span>
+              </div>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot legend-dot-cron"></span>
+              <div class="legend-text">
+                <span>Cron API</span>
+                <span class="legend-val" id="lbl-pct-cron">5%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      Latezza WhatsApp AI Automation Calculator — Dibuat untuk perkiraan biaya operasional riil on-premise hardware.
+    </footer>
+  </div>
+
+  <script>
+    // Toggle advanced options block
+    function toggleAdvancedSettings() {
+      const box = document.getElementById('advanced-box');
+      const arrow = document.getElementById('adv-arrow');
+      if (box.classList.contains('show')) {
+        box.classList.remove('show');
+        arrow.textContent = '▼';
+      } else {
+        box.classList.add('show');
+        arrow.textContent = '▲';
+      }
+    }
+
+    // Dynamic preset loader
+    function applyPreset(tier) {
+      // Remove active class from all buttons
+      document.getElementById('btn-tier1').classList.remove('active');
+      document.getElementById('btn-tier2').classList.remove('active');
+      document.getElementById('btn-tier3').classList.remove('active');
+
+      // Set active to clicked one
+      document.getElementById('btn-' + tier).classList.add('active');
+
+      if (tier === 'tier1') {
+        document.getElementById('chats').value = 100;
+        document.getElementById('messages-per-chat').value = 12;
+        document.getElementById('power').value = 50;
+        document.getElementById('tariff').value = 1500;
+        document.getElementById('followup').value = 5;
+      } else if (tier === 'tier2') {
+        document.getElementById('chats').value = 1000;
+        document.getElementById('messages-per-chat').value = 12;
+        document.getElementById('power').value = 50;
+        document.getElementById('tariff').value = 1500;
+        document.getElementById('followup').value = 5;
+      } else if (tier === 'tier3') {
+        document.getElementById('chats').value = 5000;
+        document.getElementById('messages-per-chat').value = 12;
+        document.getElementById('power').value = 50;
+        document.getElementById('tariff').value = 1500;
+        document.getElementById('followup').value = 5;
+      }
+
+      updateCalculator();
+    }
+
+    // Main calculator math
+    function updateCalculator() {
+      // Get slider/input values
+      const chatsPerDay = parseFloat(document.getElementById('chats').value);
+      const messagesPerChat = parseFloat(document.getElementById('messages-per-chat').value);
+      const exchangeRate = parseFloat(document.getElementById('rate').value);
+      const serverPower = parseFloat(document.getElementById('power').value);
+      const electricityTariff = parseFloat(document.getElementById('tariff').value);
+      const followupRate = parseFloat(document.getElementById('followup').value) / 100;
+
+      // Update slider display badges
+      document.getElementById('val-chats').textContent = chatsPerDay.toLocaleString('id-ID');
+      document.getElementById('val-messages-per-chat').textContent = messagesPerChat;
+      document.getElementById('val-rate').textContent = 'Rp ' + exchangeRate.toLocaleString('id-ID');
+      document.getElementById('val-power').textContent = serverPower + ' W';
+      document.getElementById('val-tariff').textContent = 'Rp ' + electricityTariff.toLocaleString('id-ID');
+      document.getElementById('val-followup').textContent = (followupRate * 100).toFixed(0) + '%';
+
+      // Advanced parameters
+      const tSys = parseInt(document.getElementById('t-sys').value) || 0;
+      const tTools = parseInt(document.getElementById('t-tools').value) || 0;
+      const tHist = parseInt(document.getElementById('t-hist').value) || 0;
+      const tOutDirect = parseInt(document.getElementById('t-out-direct').value) || 0;
+      const tInTool = parseInt(document.getElementById('t-in-tool').value) || 0;
+      const tOutTool = parseInt(document.getElementById('t-out-tool').value) || 0;
+
+      const rTool = (parseInt(document.getElementById('r-tool').value) || 0) / 100;
+      const rDirect = (parseInt(document.getElementById('r-direct').value) || 0) / 100;
+
+      const pInStd = parseFloat(document.getElementById('p-in-std').value) || 0;
+      const pOutStd = parseFloat(document.getElementById('p-out-std').value) || 0;
+
+      // 1. CALCULATE ON-PREMISE ELECTRICITY COST
+      const monthlyKwh = (serverPower * 24 * 30) / 1000;
+      const monthlyElectricityCost = monthlyKwh * electricityTariff;
+
+      // 2. CALCULATE SINGLE MESSAGE COST (WEIGHTED)
+      // Standard Direct turn tokens
+      const tInDirectTotal = tSys + tTools + tHist;
+      const directTurnCostUsd = (tInDirectTotal * (pInStd / 1000000)) + (tOutDirect * (pOutStd / 1000000));
+      
+      // Standard Tool execution turn tokens
+      const toolTurnCostUsd = (tInTool * (pInStd / 1000000)) + (tOutTool * (pOutStd / 1000000));
+
+      // Weighted average cost per message in USD/IDR
+      const weightedCostUsd = (rDirect * directTurnCostUsd) + (rTool * toolTurnCostUsd);
+      const weightedCostIdr = weightedCostUsd * exchangeRate;
+
+      // 3. CHAT COST PER MONTH
+      const totalChatsMonth = chatsPerDay * 30;
+      const totalMessagesMonth = totalChatsMonth * messagesPerChat;
+      const monthlyChatCostIdr = totalMessagesMonth * weightedCostIdr;
+
+      // 4. FOLLOW-UP COST PER MONTH
+      const followupCountMonth = totalChatsMonth * followupRate;
+      const tInFollowup = 800; // standard followup input tokens
+      const tOutFollowup = 60;  // standard followup output tokens
+      const followupCostUsd = (tInFollowup * (pInStd / 1000000)) + (tOutFollowup * (pOutStd / 1000000));
+      const followupCostIdr = followupCostUsd * exchangeRate;
+      const monthlyFollowupCostIdr = followupCountMonth * followupCostIdr;
+
+      // 5. CRON JOBS COST PER MONTH
+      // Ads analysis: daily (30 runs/month)
+      const adsInTokens = 1000;
+      const adsOutTokens = 800;
+      const adsCostUsd = (adsInTokens * (pInStd / 1000000)) + (adsOutTokens * (pOutStd / 1000000));
+      const adsCostIdr = adsCostUsd * exchangeRate;
+      const monthlyAdsCostIdr = adsCostIdr * 30;
+
+      // Creative analysis: weekly (4 runs/month)
+      const creativeInTokens = 2000;
+      const creativeOutTokens = 1500;
+      const creativeCostUsd = (creativeInTokens * (pInStd / 1000000)) + (creativeOutTokens * (pOutStd / 1000000));
+      const creativeCostIdr = creativeCostUsd * exchangeRate;
+      const monthlyCreativeCostIdr = creativeCostIdr * 4;
+
+      const monthlyCronCostIdr = monthlyAdsCostIdr + monthlyCreativeCostIdr;
+
+      // 6. TOTAL MONTHLY OPERATIONAL COST
+      const totalMonthlyCostIdr = monthlyChatCostIdr + monthlyElectricityCost + monthlyFollowupCostIdr + monthlyCronCostIdr;
+      const totalMonthlyCostUsd = totalMonthlyCostIdr / exchangeRate;
+
+      // Update UI Output text elements
+      document.getElementById('val-total-monthly').textContent = 'Rp ' + Math.round(totalMonthlyCostIdr).toLocaleString('id-ID');
+      document.getElementById('val-total-monthly-usd').textContent = '$' + totalMonthlyCostUsd.toFixed(2) + ' / bulan';
+      
+      document.getElementById('val-break-chat').textContent = 'Rp ' + Math.round(monthlyChatCostIdr).toLocaleString('id-ID');
+      document.getElementById('val-break-elec').textContent = 'Rp ' + Math.round(monthlyElectricityCost).toLocaleString('id-ID');
+      document.getElementById('val-break-followup').textContent = 'Rp ' + Math.round(monthlyFollowupCostIdr).toLocaleString('id-ID');
+      document.getElementById('val-break-cron').textContent = 'Rp ' + Math.round(monthlyCronCostIdr).toLocaleString('id-ID');
+
+      document.getElementById('val-avg-chat').textContent = 'Rp ' + weightedCostIdr.toFixed(2).replace('.', ',');
+      document.getElementById('val-total-chats-month').textContent = totalChatsMonth.toLocaleString('id-ID') + ' sesi/bln';
+      document.getElementById('val-total-messages-month').textContent = totalMessagesMonth.toLocaleString('id-ID') + ' pesan/bln';
+      document.getElementById('val-total-kwh').textContent = Math.round(monthlyKwh) + ' kWh/bln';
+
+      // 7. COMPUTE PERCENTAGE SHARE & UPDATE CHART
+      const chatPct = totalMonthlyCostIdr > 0 ? (monthlyChatCostIdr / totalMonthlyCostIdr) * 100 : 0;
+      const followupPct = totalMonthlyCostIdr > 0 ? (monthlyFollowupCostIdr / totalMonthlyCostIdr) * 100 : 0;
+      const cronPct = totalMonthlyCostIdr > 0 ? (monthlyCronCostIdr / totalMonthlyCostIdr) * 100 : 0;
+      const elecPct = totalMonthlyCostIdr > 0 ? (monthlyElectricityCost / totalMonthlyCostIdr) * 100 : 0;
+
+      // Update CSS width of progress stacked blocks
+      document.getElementById('prog-chat').style.width = chatPct + '%';
+      document.getElementById('prog-followup').style.width = followupPct + '%';
+      document.getElementById('prog-cron').style.width = cronPct + '%';
+      document.getElementById('prog-elec').style.width = elecPct + '%';
+
+      // Update labels
+      document.getElementById('lbl-pct-chat').textContent = chatPct.toFixed(1) + '%';
+      document.getElementById('lbl-pct-followup').textContent = followupPct.toFixed(1) + '%';
+      document.getElementById('lbl-pct-cron').textContent = cronPct.toFixed(1) + '%';
+      document.getElementById('lbl-pct-elec').textContent = elecPct.toFixed(1) + '%';
+    }
+
+    // Initialize calculator values on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      updateCalculator();
+    });
+  </script>
+</body>
+</html>
